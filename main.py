@@ -5,14 +5,21 @@ import telebot
 import psycopg2
 import time
 import threading
+import urllib.parse as up
 import secure
 from buttons import *
 from today_games import *
 from find_game import *
 
 
-bot = telebot.TeleBot(os.getenv('TOKEN'))
-db_con = psycopg2.connect(os.getenv('DB'))
+bot = telebot.TeleBot('5047508356:AAHFJKcsr2GPbydVHjnXn8DiLEBVlluJqd0')
+up.uses_netloc.append("postgres")
+url = up.urlparse("postgres://vkdzdhaw:6mG-WZ_e_os7BDR78hHSsuCfi4v25VyT@mouse.db.elephantsql.com/vkdzdhaw")
+db_con = psycopg2.connect(database=url.path[1:],
+                          user=url.username,
+                          password=url.password,
+                          host=url.hostname,
+                          port=url.port)
 db_cur = db_con.cursor()
 
 
