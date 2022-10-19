@@ -7,12 +7,15 @@ import time
 import threading
 import urllib.parse as up
 import secure
+import logging
 from buttons import *
 from today_games import *
 from find_game import *
+from flask import Flask, request
 
 
 bot = telebot.TeleBot('5047508356:AAHFJKcsr2GPbydVHjnXn8DiLEBVlluJqd0')
+APP_URL = 'https://nbashedule.onrender.com'
 up.uses_netloc.append("postgres")
 url = up.urlparse("postgres://vkdzdhaw:6mG-WZ_e_os7BDR78hHSsuCfi4v25VyT@mouse.db.elephantsql.com/vkdzdhaw")
 db_con = psycopg2.connect(database=url.path[1:],
@@ -21,6 +24,9 @@ db_con = psycopg2.connect(database=url.path[1:],
                           host=url.hostname,
                           port=url.port)
 db_cur = db_con.cursor()
+server = Flask(__name__)
+logger = telebot.logger
+logger.setLevel(logging.DEBUG)
 
 
 def show_today_games():
@@ -238,4 +244,6 @@ def callback_teams(call):
 if __name__ == '__main__':
     thr = threading.Thread(target=timer, name='timer')
     thr.start()
-    bot.polling(none_stop=True, interval=0)
+    bot.remove_webhook()
+    bot.set_webhook(url=APP_URL)
+    server.run(host='0.0.0.0', port=int(os.environ.get('PORT', 5000)))
