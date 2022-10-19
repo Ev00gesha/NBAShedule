@@ -14,7 +14,8 @@ from find_game import *
 from flask import Flask, request
 
 
-bot = telebot.TeleBot('5047508356:AAHFJKcsr2GPbydVHjnXn8DiLEBVlluJqd0')
+TOKEN = '5047508356:AAHFJKcsr2GPbydVHjnXn8DiLEBVlluJqd0'
+bot = telebot.TeleBot(TOKEN)
 APP_URL = 'https://nbashedule.onrender.com'
 up.uses_netloc.append("postgres")
 url = up.urlparse("postgres://vkdzdhaw:6mG-WZ_e_os7BDR78hHSsuCfi4v25VyT@mouse.db.elephantsql.com/vkdzdhaw")
@@ -240,6 +241,13 @@ def callback_teams(call):
     game_info = find(call.data)
     bot.send_message(chat_id, game_info, reply_markup=to_main)
 
+
+@server.route(f'/{TOKEN}', methods=['POST'])
+def get_message():
+    json_str = request.get_data().decode('utf-8')
+    update = types.Update.de_json(json_str)
+    bot.process_new_updates([update])
+    return '!', 200
 
 if __name__ == '__main__':
     thr = threading.Thread(target=timer, name='timer')
